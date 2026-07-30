@@ -1,7 +1,7 @@
-const express = require("express");
+import express, { Request, Response } from "express";
 const router = express.Router();
 
-let controller;
+let controller: unknown;
 
 try {
   controller = require("../controllers/patientController");
@@ -12,10 +12,10 @@ try {
   console.error(error);
 }
 
-router.get("/", (req, res) => {
+router.get("/", (req: Request, res: Response) => {
   res.json({
     message: "Routes are working."
   });
 });
 
-module.exports = router;
+export default router;

@@ -1,9 +1,9 @@
-const express = require("express");
-const cors = require("cors");
-const morgan = require("morgan");
+import express, { Request, Response } from "express";
+import cors from "cors";
+import morgan from "morgan";
 
-const patientRoutes = require("./routes/patientRoutes");
-const errorHandler = require("./middleware/errorHandler");
+import patientRoutes from "./routes/patientRoutes";
+import errorHandler from "./middleware/errorHandler";
 
 const app = express();
 
@@ -15,14 +15,14 @@ if (process.env.NODE_ENV !== "production") {
   app.use(morgan("dev"));
 }
 
-app.get("/", (req, res) => {
+app.get("/", (req: Request, res: Response) => {
   res.status(200).json({
     success: true,
     message: "LifeTag API is running."
   });
 });
 
-app.get("/api/health", (req, res) => {
+app.get("/api/health", (req: Request, res: Response) => {
   res.status(200).json({
     success: true,
     status: "Healthy"
@@ -31,7 +31,7 @@ app.get("/api/health", (req, res) => {
 
 app.use("/api/patients", patientRoutes);
 
-app.use((req, res) => {
+app.use((req: Request, res: Response) => {
   res.status(404).json({
     success: false,
     message: "Route not found."
@@ -40,4 +40,4 @@ app.use((req, res) => {
 
 app.use(errorHandler);
 
-module.exports = app;
+export default app;

@@ -1,6 +1,7 @@
-const Patient = require("../models/Patient");
+import { Request, Response, NextFunction } from "express";
+import Patient from "../models/Patient";
 
-const createPatient = async (req, res, next) => {
+const createPatient = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const patient = await Patient.create(req.body);
 
@@ -14,7 +15,7 @@ const createPatient = async (req, res, next) => {
   }
 };
 
-const getAllPatients = async (req, res, next) => {
+const getAllPatients = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const patients = await Patient.find().sort({ createdAt: -1 });
 
@@ -28,7 +29,7 @@ const getAllPatients = async (req, res, next) => {
   }
 };
 
-const getPatientByMedicalId = async (req, res, next) => {
+const getPatientByMedicalId = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const patient = await Patient.findOne({
       medicalId: req.params.medicalId,
@@ -50,7 +51,7 @@ const getPatientByMedicalId = async (req, res, next) => {
   }
 };
 
-const updatePatient = async (req, res, next) => {
+const updatePatient = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const patient = await Patient.findOneAndUpdate(
       {
@@ -80,7 +81,7 @@ const updatePatient = async (req, res, next) => {
   }
 };
 
-const deletePatient = async (req, res, next) => {
+const deletePatient = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const patient = await Patient.findOneAndDelete({
       medicalId: req.params.medicalId,
@@ -102,9 +103,9 @@ const deletePatient = async (req, res, next) => {
   }
 };
 
-const searchPatients = async (req, res, next) => {
+const searchPatients = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const keyword = req.query.q || "";
+    const keyword = (req.query.q as string) || "";
 
     const patients = await Patient.find({
       fullName: {
@@ -123,7 +124,7 @@ const searchPatients = async (req, res, next) => {
   }
 };
 
-module.exports = {
+export {
   createPatient,
   getAllPatients,
   getPatientByMedicalId,

@@ -1,6 +1,34 @@
-const mongoose = require("mongoose");
+import mongoose, { Schema, Document, Model } from "mongoose";
 
-const emergencyContactSchema = new mongoose.Schema(
+export interface IEmergencyContact {
+  name: string;
+  relation: string;
+  phone: string;
+}
+
+export interface IPhysician {
+  name?: string;
+  hospital?: string;
+  phone?: string;
+}
+
+export interface IPatient extends Document {
+  medicalId?: string;
+  fullName: string;
+  dateOfBirth?: Date;
+  gender?: "Male" | "Female" | "Other";
+  bloodGroup: "A+" | "A-" | "B+" | "B-" | "AB+" | "AB-" | "O+" | "O-";
+  photoUrl?: string;
+  allergies: string[];
+  chronicConditions: string[];
+  currentMedications: string[];
+  emergencyContacts: IEmergencyContact[];
+  primaryPhysician?: IPhysician;
+  organDonor: boolean;
+  notes: string;
+}
+
+const emergencyContactSchema = new Schema<IEmergencyContact>(
   {
     name: {
       type: String,
@@ -21,7 +49,7 @@ const emergencyContactSchema = new mongoose.Schema(
   { _id: false }
 );
 
-const physicianSchema = new mongoose.Schema(
+const physicianSchema = new Schema<IPhysician>(
   {
     name: {
       type: String,
@@ -39,7 +67,7 @@ const physicianSchema = new mongoose.Schema(
   { _id: false }
 );
 
-const patientSchema = new mongoose.Schema(
+const patientSchema = new Schema<IPatient>(
   {
     medicalId: {
       type: String,
@@ -119,7 +147,7 @@ const patientSchema = new mongoose.Schema(
   }
 );
 
-patientSchema.pre("save", async function (next) {
+patientSchema.pre<IPatient>("save", async function (next) {
   if (this.medicalId) {
     return next();
   }
@@ -133,4 +161,6 @@ patientSchema.pre("save", async function (next) {
   next();
 });
 
-module.exports = mongoose.model("Patient", patientSchema);
+const Patient: Model<IPatient> = mongoose.model<IPatient>("Patient", patientSchema);
+
+export default Patient;
