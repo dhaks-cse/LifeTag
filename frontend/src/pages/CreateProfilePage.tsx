@@ -43,7 +43,8 @@ interface CreateProfileFormData {
 
 type FormErrors = Partial<Record<keyof CreateProfileFormData, string>>;
 
-const PATIENTS_ENDPOINT = "http://localhost:5001/api/patients";
+const API_URL = import.meta.env.VITE_API_URL;
+const PATIENTS_ENDPOINT = `${API_URL}/api/patients`;
 const BLOOD_GROUPS = ["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"];
 const GENDERS = ["Male", "Female", "Other"];
 const STEP_LABELS = ["Personal", "Medical", "Contacts", "Additional", "Review"];

@@ -41,7 +41,8 @@ interface Patient {
   notes?: string;
 }
 
-const PATIENTS_ENDPOINT = "http://localhost:5001/api/patients";
+const API_URL = import.meta.env.VITE_API_URL;
+const PATIENTS_ENDPOINT = `${API_URL}/api/patients`;
 
 function formatDate(value?: string): string {
   if (!value) return "Not provided";

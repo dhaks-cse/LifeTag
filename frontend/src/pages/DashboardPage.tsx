@@ -25,7 +25,8 @@ import Skeleton from "../components/ui/Skeleton";
 import { buttonClassName } from "../components/ui/Button";
 import { useToast } from "../components/ui/Toast";
 
-const PATIENTS_ENDPOINT = "http://localhost:5001/api/patients";
+const API_URL = import.meta.env.VITE_API_URL;
+const PATIENTS_ENDPOINT = `${API_URL}/api/patients`;
 
 const staggerContainerVariant = {
   hidden: {},
