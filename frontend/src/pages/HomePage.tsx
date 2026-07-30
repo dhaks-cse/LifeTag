@@ -23,6 +23,7 @@ import {
   Mail,
   CheckCircle2,
 } from "lucide-react";
+import { buttonClassName } from "../components/ui/Button";
 
 const fadeUpVariant = {
   hidden: { opacity: 0, y: 24 },
@@ -191,7 +192,8 @@ function FeatureCard({ icon: Icon, title, description }: FeatureCardProps) {
   return (
     <motion.div
       variants={fadeUpVariant}
-      className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm transition-shadow hover:shadow-md"
+      whileHover={{ y: -4 }}
+      className="rounded-2xl border border-slate-200 bg-white p-6 shadow-card transition-shadow hover:shadow-soft"
     >
       <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-blue-50 text-blue-600">
         <Icon className="h-5 w-5" />
@@ -202,24 +204,28 @@ function FeatureCard({ icon: Icon, title, description }: FeatureCardProps) {
   );
 }
 
-interface StepCardProps {
+interface TimelineStepProps {
   icon: LucideIcon;
   title: string;
   description: string;
   stepNumber: number;
+  isLast: boolean;
 }
 
-function StepCard({ icon: Icon, title, description, stepNumber }: StepCardProps) {
+function TimelineStep({ icon: Icon, title, description, stepNumber, isLast }: TimelineStepProps) {
   return (
-    <motion.div variants={fadeUpVariant} className="relative rounded-2xl border border-slate-200 bg-white p-6">
-      <div className="flex items-center gap-3">
-        <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-blue-600 text-white">
+    <motion.div variants={fadeUpVariant} className="relative flex gap-5">
+      <div className="flex flex-col items-center">
+        <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-blue-600 text-white shadow-glow">
           <Icon className="h-5 w-5" />
         </div>
-        <span className="text-sm font-semibold text-blue-600">Step {stepNumber}</span>
+        {!isLast && <div className="mt-2 w-0.5 flex-1 bg-gradient-to-b from-blue-200 to-transparent" />}
       </div>
-      <h3 className="mt-4 text-lg font-semibold text-slate-900">{title}</h3>
-      <p className="mt-2 text-sm leading-relaxed text-slate-600">{description}</p>
+      <div className="pb-10">
+        <span className="text-xs font-semibold uppercase tracking-wide text-blue-600">Step {stepNumber}</span>
+        <h3 className="mt-1 text-lg font-semibold text-slate-900">{title}</h3>
+        <p className="mt-2 max-w-md text-sm leading-relaxed text-slate-600">{description}</p>
+      </div>
     </motion.div>
   );
 }
@@ -234,7 +240,7 @@ function HardwareCard({ icon: Icon, title, description }: HardwareCardProps) {
   return (
     <motion.div
       variants={fadeUpVariant}
-      className="flex items-start gap-4 rounded-2xl border border-slate-200 bg-white p-5"
+      className="flex items-start gap-4 rounded-2xl border border-slate-200 bg-white p-5 shadow-card"
     >
       <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl bg-blue-50 text-blue-600">
         <Icon className="h-5 w-5" />
@@ -270,16 +276,10 @@ function HomePage() {
           </nav>
 
           <div className="hidden items-center gap-4 md:flex">
-            <Link
-              to="/dashboard"
-              className="text-sm font-medium text-slate-600 transition-colors hover:text-blue-600"
-            >
+            <Link to="/dashboard" className="text-sm font-medium text-slate-600 transition-colors hover:text-blue-600">
               Dashboard
             </Link>
-            <Link
-              to="/create"
-              className="rounded-full bg-blue-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-blue-700"
-            >
+            <Link to="/create" className={buttonClassName("primary", "sm")}>
               Create Your LifeTag
             </Link>
           </div>
@@ -300,18 +300,10 @@ function HomePage() {
               {navLinks.map((link) => (
                 <NavAnchor key={link.href} href={link.href} label={link.label} onClick={closeMenu} />
               ))}
-              <Link
-                to="/dashboard"
-                onClick={closeMenu}
-                className="text-sm font-medium text-slate-600 hover:text-blue-600"
-              >
+              <Link to="/dashboard" onClick={closeMenu} className="text-sm font-medium text-slate-600 hover:text-blue-600">
                 Dashboard
               </Link>
-              <Link
-                to="/create"
-                onClick={closeMenu}
-                className="rounded-full bg-blue-600 px-5 py-2.5 text-center text-sm font-semibold text-white hover:bg-blue-700"
-              >
+              <Link to="/create" onClick={closeMenu} className={buttonClassName("primary", "md", "justify-center")}>
                 Create Your LifeTag
               </Link>
             </nav>
@@ -320,7 +312,14 @@ function HomePage() {
       </header>
 
       <main>
-        <section id="hero" className="overflow-hidden px-6 pb-20 pt-16 lg:px-8 lg:pt-24">
+        <section id="hero" className="relative overflow-hidden px-6 pb-20 pt-16 lg:px-8 lg:pt-24">
+          <div
+            aria-hidden
+            className="pointer-events-none absolute inset-x-0 -top-40 -z-10 flex justify-center blur-3xl"
+          >
+            <div className="h-96 w-[48rem] bg-gradient-to-tr from-blue-200 via-blue-100 to-transparent opacity-60" />
+          </div>
+
           <div className="mx-auto grid max-w-7xl items-center gap-12 lg:grid-cols-2">
             <motion.div initial="hidden" animate="visible" variants={staggerContainerVariant}>
               <motion.span
@@ -334,7 +333,10 @@ function HomePage() {
                 variants={fadeUpVariant}
                 className="mt-6 text-4xl font-bold leading-tight tracking-tight text-slate-900 sm:text-5xl lg:text-6xl"
               >
-                When Every Second Counts, LifeTag Speaks For You
+                When Every Second Counts,{" "}
+                <span className="bg-gradient-to-r from-blue-600 to-blue-500 bg-clip-text text-transparent">
+                  LifeTag Speaks For You
+                </span>
               </motion.h1>
 
               <motion.p variants={fadeUpVariant} className="mt-6 max-w-xl text-lg leading-relaxed text-slate-600">
@@ -344,17 +346,11 @@ function HomePage() {
               </motion.p>
 
               <motion.div variants={fadeUpVariant} className="mt-8 flex flex-col gap-4 sm:flex-row">
-                <Link
-                  to="/create"
-                  className="inline-flex items-center justify-center gap-2 rounded-full bg-blue-600 px-6 py-3.5 text-base font-semibold text-white shadow-sm transition-colors hover:bg-blue-700"
-                >
+                <Link to="/create" className={buttonClassName("primary", "lg")}>
                   Create Your LifeTag
                   <ArrowRight className="h-4 w-4" />
                 </Link>
-                <a
-                  href="#how-it-works"
-                  className="inline-flex items-center justify-center gap-2 rounded-full border border-slate-300 px-6 py-3.5 text-base font-semibold text-slate-700 transition-colors hover:border-blue-600 hover:text-blue-600"
-                >
+                <a href="#how-it-works" className={buttonClassName("secondary", "lg")}>
                   See How It Works
                 </a>
               </motion.div>
@@ -373,18 +369,29 @@ function HomePage() {
               className="relative flex items-center justify-center"
             >
               <div className="absolute h-72 w-72 rounded-full bg-blue-50 sm:h-96 sm:w-96" />
-              <motion.div
-                animate={{ scale: [1, 1.06, 1], opacity: [0.5, 0.15, 0.5] }}
-                transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
-                className="absolute h-56 w-56 rounded-full border-2 border-blue-300 sm:h-72 sm:w-72"
-              />
 
-              <div className="relative w-full max-w-sm rounded-3xl border border-slate-200 bg-white p-6 shadow-xl">
+              {[0, 1, 2].map((ring) => (
+                <motion.div
+                  key={ring}
+                  animate={{ scale: [1, 1.35], opacity: [0.5, 0] }}
+                  transition={{ duration: 2.4, repeat: Infinity, ease: "easeOut", delay: ring * 0.7 }}
+                  className="absolute h-56 w-56 rounded-full border-2 border-blue-300 sm:h-72 sm:w-72"
+                />
+              ))}
+
+              <motion.div
+                animate={{ y: [0, -10, 0] }}
+                transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+                className="relative w-full max-w-sm rounded-3xl border border-slate-200 bg-white p-6 shadow-glow"
+              >
                 <div className="flex items-center justify-between">
                   <span className="text-xs font-semibold uppercase tracking-wide text-slate-400">
                     Emergency Profile
                   </span>
-                  <ShieldCheck className="h-5 w-5 text-blue-600" />
+                  <div className="flex items-center gap-1 rounded-full bg-blue-50 px-2 py-1 text-[10px] font-semibold text-blue-600">
+                    <Wifi className="h-3 w-3" />
+                    NFC TAP
+                  </div>
                 </div>
                 <div className="mt-4 flex items-center gap-3">
                   <div className="flex h-14 w-14 items-center justify-center rounded-full bg-blue-600 text-white">
@@ -405,7 +412,7 @@ function HomePage() {
                     Current medications listed
                   </div>
                 </div>
-              </div>
+              </motion.div>
             </motion.div>
           </div>
         </section>
@@ -448,7 +455,7 @@ function HomePage() {
         </section>
 
         <section id="how-it-works" className="px-6 py-20 lg:px-8">
-          <div className="mx-auto max-w-7xl">
+          <div className="mx-auto max-w-4xl">
             <motion.div
               initial="hidden"
               whileInView="visible"
@@ -469,15 +476,16 @@ function HomePage() {
               whileInView="visible"
               viewport={{ once: true, amount: 0.2 }}
               variants={staggerContainerVariant}
-              className="mt-14 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4"
+              className="mt-14"
             >
               {stepItems.map((step, index) => (
-                <StepCard
+                <TimelineStep
                   key={step.title}
                   icon={step.icon}
                   title={step.title}
                   description={step.description}
                   stepNumber={index + 1}
+                  isLast={index === stepItems.length - 1}
                 />
               ))}
             </motion.div>
@@ -535,7 +543,7 @@ function HomePage() {
             whileInView="visible"
             viewport={{ once: true, amount: 0.4 }}
             variants={staggerContainerVariant}
-            className="mx-auto max-w-5xl rounded-3xl bg-blue-600 px-8 py-14 text-center sm:px-16"
+            className="relative mx-auto max-w-5xl overflow-hidden rounded-3xl bg-gradient-to-br from-blue-600 to-blue-700 px-8 py-14 text-center shadow-glow sm:px-16"
           >
             <motion.h2 variants={fadeUpVariant} className="text-3xl font-bold tracking-tight text-white sm:text-4xl">
               Your Medical Story, Ready in an Emergency

@@ -1,19 +1,56 @@
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, useLocation } from "react-router-dom";
+import { AnimatePresence } from "framer-motion";
 import HomePage from "./pages/HomePage";
 import DashboardPage from "./pages/DashboardPage";
 import CreateProfilePage from "./pages/CreateProfilePage";
 import EditProfilePage from "./pages/EditProfilePage";
 import PublicProfilePage from "./pages/PublicProfilePage";
+import PageTransition from "./components/PageTransition";
+import { ToastProvider } from "./components/ui/Toast";
 
 function App() {
+  const location = useLocation();
+
   return (
-    <Routes>
-      <Route path="/" element={<HomePage />} />
-      <Route path="/dashboard" element={<DashboardPage />} />
-      <Route path="/create" element={<CreateProfilePage />} />
-      <Route path="/edit/:medicalId" element={<EditProfilePage />} />
-      <Route path="/profile/:medicalId" element={<PublicProfilePage />} />
-    </Routes>
+    <ToastProvider>
+      <AnimatePresence mode="wait">
+        <Routes location={location} key={location.pathname}>
+          <Route path="/" element={<HomePage />} />
+          <Route
+            path="/dashboard"
+            element={
+              <PageTransition>
+                <DashboardPage />
+              </PageTransition>
+            }
+          />
+          <Route
+            path="/create"
+            element={
+              <PageTransition>
+                <CreateProfilePage />
+              </PageTransition>
+            }
+          />
+          <Route
+            path="/edit/:medicalId"
+            element={
+              <PageTransition>
+                <EditProfilePage />
+              </PageTransition>
+            }
+          />
+          <Route
+            path="/profile/:medicalId"
+            element={
+              <PageTransition>
+                <PublicProfilePage />
+              </PageTransition>
+            }
+          />
+        </Routes>
+      </AnimatePresence>
+    </ToastProvider>
   );
 }
 

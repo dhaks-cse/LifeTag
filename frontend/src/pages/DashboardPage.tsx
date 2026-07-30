@@ -2,36 +2,28 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import axios from "axios";
 import { motion } from "framer-motion";
-import type { LucideIcon } from "lucide-react";
 import {
   Search,
   Plus,
-  Fingerprint,
-  Droplet,
-  Users,
-  Eye,
-  Pencil,
   AlertTriangle,
   Inbox,
   UserRoundPlus,
   ExternalLink,
   RefreshCw,
   UsersRound,
+  Droplet,
+  Users,
   FileCheck2,
+  Clock,
+  Filter,
 } from "lucide-react";
-
-interface EmergencyContact {
-  name?: string;
-  relation?: string;
-  phone?: string;
-}
-
-interface Patient {
-  fullName?: string;
-  medicalId?: string;
-  bloodGroup?: string;
-  emergencyContacts?: EmergencyContact[];
-}
+import type { Patient } from "../types/patient";
+import Navbar from "../components/Navbar";
+import PatientCard from "../components/PatientCard";
+import Card from "../components/ui/Card";
+import Skeleton from "../components/ui/Skeleton";
+import { buttonClassName } from "../components/ui/Button";
+import { useToast } from "../components/ui/Toast";
 
 const PATIENTS_ENDPOINT = "http://localhost:5001/api/patients";
 
@@ -57,25 +49,27 @@ function getEmergencyContactCount(patient: Patient): number {
   return Array.isArray(patient.emergencyContacts) ? patient.emergencyContacts.length : 0;
 }
 
-function getInitials(fullName?: string): string {
-  if (!fullName) return "NA";
-  const parts = fullName.trim().split(/\s+/);
-  const initials = parts.slice(0, 2).map((part) => part[0]?.toUpperCase() ?? "");
-  return initials.join("") || "NA";
+function formatRelativeTime(value?: string): string {
+  if (!value) return "recently";
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return "recently";
+  const diffMinutes = Math.round((Date.now() - date.getTime()) / 60000);
+  if (diffMinutes < 1) return "just now";
+  if (diffMinutes < 60) return `${diffMinutes}m ago`;
+  const diffHours = Math.round(diffMinutes / 60);
+  if (diffHours < 24) return `${diffHours}h ago`;
+  return `${Math.round(diffHours / 24)}d ago`;
 }
 
 interface StatCardProps {
-  icon: LucideIcon;
+  icon: typeof UsersRound;
   label: string;
   value: number;
 }
 
 function StatCard({ icon: Icon, label, value }: StatCardProps) {
   return (
-    <motion.div
-      variants={fadeUpVariant}
-      className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm"
-    >
+    <Card className="p-5">
       <div className="flex items-center gap-3">
         <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-50 text-blue-600">
           <Icon className="h-5 w-5" />
@@ -85,20 +79,19 @@ function StatCard({ icon: Icon, label, value }: StatCardProps) {
           <p className="text-xs font-medium text-slate-500">{label}</p>
         </div>
       </div>
-    </motion.div>
+    </Card>
   );
 }
 
 interface QuickActionButtonProps {
-  icon: LucideIcon;
+  icon: typeof UserRoundPlus;
   label: string;
   onClick?: () => void;
   to?: string;
 }
 
 function QuickActionButton({ icon: Icon, label, onClick, to }: QuickActionButtonProps) {
-  const className =
-    "flex items-center gap-2 rounded-full border border-slate-300 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 transition-colors hover:border-blue-600 hover:text-blue-600";
+  const className = buttonClassName("secondary", "sm");
 
   if (to) {
     return (
@@ -117,129 +110,96 @@ function QuickActionButton({ icon: Icon, label, onClick, to }: QuickActionButton
   );
 }
 
-interface PatientCardProps {
-  patient: Patient;
-}
-
-function PatientCard({ patient }: PatientCardProps) {
-  return (
-    <motion.div
-      variants={fadeUpVariant}
-      whileHover={{ y: -4 }}
-      className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm transition-shadow hover:shadow-md"
-    >
-      <div className="flex items-center gap-3">
-        <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-blue-600 text-sm font-semibold text-white">
-          {getInitials(patient.fullName)}
-        </div>
-        <h3 className="text-lg font-semibold text-slate-900">
-          {patient.fullName ?? "Unnamed Patient"}
-        </h3>
-      </div>
-
-      <div className="mt-5 flex flex-wrap gap-2">
-        <span className="inline-flex items-center gap-1.5 rounded-full bg-rose-50 px-3 py-1 text-xs font-semibold text-rose-700">
-          <Droplet className="h-3.5 w-3.5" />
-          {patient.bloodGroup ?? "Unknown"}
-        </span>
-        <span className="inline-flex items-center gap-1.5 rounded-full bg-blue-50 px-3 py-1 text-xs font-semibold text-blue-700">
-          <Fingerprint className="h-3.5 w-3.5" />
-          {patient.medicalId ?? "N/A"}
-        </span>
-        <span className="inline-flex items-center gap-1.5 rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-700">
-          <Users className="h-3.5 w-3.5" />
-          {getEmergencyContactCount(patient)} contacts
-        </span>
-      </div>
-
-      <div className="mt-6 flex gap-3">
-        <Link
-          to={`/profile/${patient.medicalId}`}
-          className="inline-flex flex-1 items-center justify-center gap-2 rounded-full bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-blue-700"
-        >
-          <Eye className="h-4 w-4" />
-          View
-        </Link>
-        <Link
-          to={`/edit/${patient.medicalId}`}
-          className="inline-flex flex-1 items-center justify-center gap-2 rounded-full border border-slate-300 px-4 py-2.5 text-sm font-semibold text-slate-700 transition-colors hover:border-blue-600 hover:text-blue-600"
-        >
-          <Pencil className="h-4 w-4" />
-          Edit
-        </Link>
-      </div>
-    </motion.div>
-  );
-}
-
 function SkeletonCard() {
   return (
-    <div className="animate-pulse rounded-2xl border border-slate-200 bg-white p-6">
+    <div className="rounded-2xl border border-slate-200 bg-white p-6">
       <div className="flex items-center gap-3">
-        <div className="h-12 w-12 rounded-full bg-slate-200" />
-        <div className="h-4 w-32 rounded bg-slate-200" />
+        <Skeleton className="h-12 w-12 rounded-full" />
+        <Skeleton className="h-4 w-32" />
       </div>
       <div className="mt-5 flex gap-2">
-        <div className="h-6 w-16 rounded-full bg-slate-200" />
-        <div className="h-6 w-16 rounded-full bg-slate-200" />
-        <div className="h-6 w-20 rounded-full bg-slate-200" />
+        <Skeleton className="h-6 w-16 rounded-full" />
+        <Skeleton className="h-6 w-20 rounded-full" />
       </div>
-      <div className="mt-6 flex gap-3">
-        <div className="h-10 flex-1 rounded-full bg-slate-200" />
-        <div className="h-10 flex-1 rounded-full bg-slate-200" />
+      <Skeleton className="mt-4 h-12 w-full" />
+      <div className="mt-5 flex gap-3">
+        <Skeleton className="h-10 flex-1 rounded-full" />
+        <Skeleton className="h-10 flex-1 rounded-full" />
       </div>
     </div>
   );
 }
 
 function DashboardPage() {
+  const { showToast } = useToast();
   const [patients, setPatients] = useState<Patient[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
+  const [bloodGroupFilter, setBloodGroupFilter] = useState("all");
 
-  const fetchPatients = useCallback(async () => {
-    setIsLoading(true);
-    setErrorMessage("");
+  const fetchPatients = useCallback(
+    async (isManualRefresh = false) => {
+      setIsLoading(true);
+      setErrorMessage("");
 
-    try {
-      const response = await axios.get(PATIENTS_ENDPOINT);
-      setPatients(extractPatientList(response.data));
-    } catch (error) {
-      setErrorMessage("We couldn't load patient records right now. Please try again later.");
-    } finally {
-      setIsLoading(false);
-    }
-  }, []);
+      try {
+        const response = await axios.get(PATIENTS_ENDPOINT);
+        setPatients(extractPatientList(response.data));
+        if (isManualRefresh) showToast("success", "Patient list refreshed.");
+      } catch (error) {
+        setErrorMessage("We couldn't load patient records right now. Please try again later.");
+        if (isManualRefresh) showToast("error", "Couldn't refresh patient list.");
+      } finally {
+        setIsLoading(false);
+      }
+    },
+    [showToast]
+  );
 
   useEffect(() => {
     fetchPatients();
-  }, [fetchPatients]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const bloodGroups = useMemo(
+    () => Array.from(new Set(patients.map((patient) => patient.bloodGroup).filter(Boolean))) as string[],
+    [patients]
+  );
 
   const filteredPatients = useMemo(() => {
     const query = searchTerm.trim().toLowerCase();
-    if (!query) return patients;
     return patients.filter((patient) => {
       const fullName = patient.fullName?.toLowerCase() ?? "";
       const medicalId = patient.medicalId?.toLowerCase() ?? "";
-      return fullName.includes(query) || medicalId.includes(query);
+      const matchesQuery = !query || fullName.includes(query) || medicalId.includes(query);
+      const matchesBloodGroup = bloodGroupFilter === "all" || patient.bloodGroup === bloodGroupFilter;
+      return matchesQuery && matchesBloodGroup;
     });
-  }, [patients, searchTerm]);
+  }, [patients, searchTerm, bloodGroupFilter]);
+
+  const recentPatients = useMemo(() => {
+    return [...patients]
+      .sort((a, b) => new Date(b.updatedAt ?? 0).getTime() - new Date(a.updatedAt ?? 0).getTime())
+      .slice(0, 5);
+  }, [patients]);
 
   const stats = useMemo(() => {
-    const bloodGroups = new Set(patients.map((patient) => patient.bloodGroup).filter(Boolean));
+    const uniqueBloodGroups = new Set(patients.map((patient) => patient.bloodGroup).filter(Boolean));
     const totalContacts = patients.reduce((sum, patient) => sum + getEmergencyContactCount(patient), 0);
 
     return {
       totalPatients: patients.length,
-      bloodGroupsAvailable: bloodGroups.size,
+      bloodGroupsAvailable: uniqueBloodGroups.size,
       totalEmergencyContacts: totalContacts,
       profilesCreated: patients.length,
     };
   }, [patients]);
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-slate-50">
+      <Navbar />
+
       <div className="mx-auto max-w-7xl px-6 py-10 lg:px-8">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
@@ -250,10 +210,7 @@ function DashboardPage() {
               Manage emergency medical profiles across your organization.
             </p>
           </div>
-          <Link
-            to="/create"
-            className="inline-flex items-center justify-center gap-2 rounded-full bg-blue-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-blue-700"
-          >
+          <Link to="/create" className={buttonClassName("primary", "md")}>
             <Plus className="h-4 w-4" />
             Create Profile
           </Link>
@@ -274,71 +231,117 @@ function DashboardPage() {
         <div className="mt-8 flex flex-wrap gap-3">
           <QuickActionButton icon={UserRoundPlus} label="Create Patient" to="/create" />
           <QuickActionButton icon={ExternalLink} label="View Public Profile" to="/profile/demo" />
-          <QuickActionButton icon={RefreshCw} label="Refresh" onClick={fetchPatients} />
+          <QuickActionButton icon={RefreshCw} label="Refresh" onClick={() => fetchPatients(true)} />
         </div>
 
-        <div className="relative mt-8 max-w-md">
-          <Search className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
-          <input
-            type="text"
-            value={searchTerm}
-            onChange={(event) => setSearchTerm(event.target.value)}
-            placeholder="Search patients by name or medical ID..."
-            className="w-full rounded-full border border-slate-300 bg-white py-2.5 pl-11 pr-4 text-sm text-slate-700 placeholder:text-slate-400 focus:border-blue-600 focus:outline-none focus:ring-1 focus:ring-blue-600"
-          />
-        </div>
-
-        <div className="mt-10">
-          {isLoading && (
-            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-              {Array.from({ length: 6 }).map((_, index) => (
-                <SkeletonCard key={index} />
-              ))}
-            </div>
-          )}
-
-          {!isLoading && errorMessage && (
-            <div className="flex flex-col items-center justify-center gap-3 rounded-2xl border border-slate-200 bg-white py-20">
-              <AlertTriangle className="h-6 w-6 text-rose-600" />
-              <p className="text-sm font-medium text-slate-700">{errorMessage}</p>
-            </div>
-          )}
-
-          {!isLoading && !errorMessage && filteredPatients.length === 0 && (
-            <div className="flex flex-col items-center justify-center gap-3 rounded-2xl border border-slate-200 bg-white py-20 text-center">
-              <Inbox className="h-6 w-6 text-blue-600" />
-              <p className="text-sm font-medium text-slate-700">
-                {patients.length === 0 ? "No patient profiles yet" : "No patients match your search"}
-              </p>
-              <p className="max-w-sm text-sm text-slate-500">
-                {patients.length === 0
-                  ? "Create your first patient profile to start building your emergency response network."
-                  : "Try a different name or medical ID."}
-              </p>
-              {patients.length === 0 && (
-                <Link
-                  to="/create"
-                  className="mt-2 inline-flex items-center justify-center gap-2 rounded-full bg-blue-600 px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-blue-700"
+        <div className="mt-8 grid grid-cols-1 gap-8 lg:grid-cols-3">
+          <div className="lg:col-span-2">
+            <div className="flex flex-col gap-3 sm:flex-row">
+              <div className="relative flex-1">
+                <Search className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+                <input
+                  type="text"
+                  value={searchTerm}
+                  onChange={(event) => setSearchTerm(event.target.value)}
+                  placeholder="Search patients by name or medical ID..."
+                  className="w-full rounded-full border border-slate-300 bg-white py-2.5 pl-11 pr-4 text-sm text-slate-700 placeholder:text-slate-400 focus:border-blue-600 focus:outline-none focus:ring-1 focus:ring-blue-600"
+                />
+              </div>
+              <div className="relative">
+                <Filter className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+                <select
+                  value={bloodGroupFilter}
+                  onChange={(event) => setBloodGroupFilter(event.target.value)}
+                  className="w-full rounded-full border border-slate-300 bg-white py-2.5 pl-11 pr-8 text-sm text-slate-700 focus:border-blue-600 focus:outline-none focus:ring-1 focus:ring-blue-600 sm:w-52"
                 >
-                  <Plus className="h-4 w-4" />
-                  Create Profile
-                </Link>
+                  <option value="all">All Blood Groups</option>
+                  {bloodGroups.map((group) => (
+                    <option key={group} value={group}>
+                      {group}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
+
+            <div className="mt-6">
+              {isLoading && (
+                <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-3">
+                  {Array.from({ length: 6 }).map((_, index) => (
+                    <SkeletonCard key={index} />
+                  ))}
+                </div>
+              )}
+
+              {!isLoading && errorMessage && (
+                <Card className="flex flex-col items-center justify-center gap-3 py-20">
+                  <AlertTriangle className="h-6 w-6 text-rose-600" />
+                  <p className="text-sm font-medium text-slate-700">{errorMessage}</p>
+                </Card>
+              )}
+
+              {!isLoading && !errorMessage && filteredPatients.length === 0 && (
+                <Card className="flex flex-col items-center justify-center gap-3 py-20 text-center">
+                  <Inbox className="h-6 w-6 text-blue-600" />
+                  <p className="text-sm font-medium text-slate-700">
+                    {patients.length === 0 ? "No patient profiles yet" : "No patients match your filters"}
+                  </p>
+                  <p className="max-w-sm text-sm text-slate-500">
+                    {patients.length === 0
+                      ? "Create your first patient profile to start building your emergency response network."
+                      : "Try a different name, medical ID, or blood group."}
+                  </p>
+                  {patients.length === 0 && (
+                    <Link to="/create" className={buttonClassName("primary", "sm", "mt-2")}>
+                      <Plus className="h-4 w-4" />
+                      Create Profile
+                    </Link>
+                  )}
+                </Card>
+              )}
+
+              {!isLoading && !errorMessage && filteredPatients.length > 0 && (
+                <motion.div
+                  initial="hidden"
+                  animate="visible"
+                  variants={staggerContainerVariant}
+                  className="grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-3"
+                >
+                  {filteredPatients.map((patient) => (
+                    <PatientCard key={patient.medicalId} patient={patient} />
+                  ))}
+                </motion.div>
               )}
             </div>
-          )}
+          </div>
 
-          {!isLoading && !errorMessage && filteredPatients.length > 0 && (
-            <motion.div
-              initial="hidden"
-              animate="visible"
-              variants={staggerContainerVariant}
-              className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3"
-            >
-              {filteredPatients.map((patient) => (
-                <PatientCard key={patient.medicalId} patient={patient} />
-              ))}
-            </motion.div>
-          )}
+          <div className="lg:col-span-1">
+            <Card className="p-5">
+              <h2 className="flex items-center gap-2 text-sm font-semibold text-slate-900">
+                <Clock className="h-4 w-4 text-blue-600" />
+                Recent Activity
+              </h2>
+              <div className="mt-4 space-y-1">
+                {recentPatients.length === 0 && (
+                  <p className="text-sm text-slate-400">No activity yet.</p>
+                )}
+                {recentPatients.map((patient) => (
+                  <Link
+                    key={patient.medicalId}
+                    to={`/profile/${patient.medicalId}`}
+                    className="flex items-center justify-between gap-2 rounded-xl px-2 py-2.5 text-sm transition-colors hover:bg-slate-50"
+                  >
+                    <span className="truncate font-medium text-slate-700">
+                      {patient.fullName ?? "Unnamed Patient"}
+                    </span>
+                    <span className="flex-shrink-0 text-xs text-slate-400">
+                      {formatRelativeTime(patient.updatedAt)}
+                    </span>
+                  </Link>
+                ))}
+              </div>
+            </Card>
+          </div>
         </div>
       </div>
     </div>
