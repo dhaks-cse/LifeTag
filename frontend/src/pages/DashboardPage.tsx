@@ -27,8 +27,6 @@ interface EmergencyContact {
 }
 
 interface Patient {
-  _id?: string;
-  id?: string;
   fullName?: string;
   medicalId?: string;
   bloodGroup?: string;
@@ -124,8 +122,6 @@ interface PatientCardProps {
 }
 
 function PatientCard({ patient }: PatientCardProps) {
-  const patientId = patient._id ?? patient.id;
-
   return (
     <motion.div
       variants={fadeUpVariant}
@@ -158,14 +154,14 @@ function PatientCard({ patient }: PatientCardProps) {
 
       <div className="mt-6 flex gap-3">
         <Link
-          to={`/profile/${patientId}`}
+          to={`/profile/${patient.medicalId}`}
           className="inline-flex flex-1 items-center justify-center gap-2 rounded-full bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-blue-700"
         >
           <Eye className="h-4 w-4" />
           View
         </Link>
         <Link
-          to={`/edit/${patientId}`}
+          to={`/edit/${patient.medicalId}`}
           className="inline-flex flex-1 items-center justify-center gap-2 rounded-full border border-slate-300 px-4 py-2.5 text-sm font-semibold text-slate-700 transition-colors hover:border-blue-600 hover:text-blue-600"
         >
           <Pencil className="h-4 w-4" />
@@ -339,7 +335,7 @@ function DashboardPage() {
               className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3"
             >
               {filteredPatients.map((patient) => (
-                <PatientCard key={patient._id ?? patient.id} patient={patient} />
+                <PatientCard key={patient.medicalId} patient={patient} />
               ))}
             </motion.div>
           )}

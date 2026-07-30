@@ -11,8 +11,8 @@ function App() {
       <Route path="/" element={<HomePage />} />
       <Route path="/dashboard" element={<DashboardPage />} />
       <Route path="/create" element={<CreateProfilePage />} />
-      <Route path="/edit/:id" element={<EditProfilePage />} />
-      <Route path="/profile/:id" element={<PublicProfilePage />} />
+      <Route path="/edit/:medicalId" element={<EditProfilePage />} />
+      <Route path="/profile/:medicalId" element={<PublicProfilePage />} />
     </Routes>
   );
 }

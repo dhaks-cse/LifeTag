@@ -141,7 +141,7 @@ function FieldError({ message }: FieldErrorProps) {
 }
 
 function EditProfilePage() {
-  const { id } = useParams();
+  const { medicalId } = useParams();
   const navigate = useNavigate();
 
   const [formData, setFormData] = useState<EditProfileFormData>(initialFormState);
@@ -160,7 +160,7 @@ function EditProfilePage() {
       setLoadError("");
 
       try {
-        const response = await axios.get(`${PATIENTS_ENDPOINT}/${id}`);
+        const response = await axios.get(`${PATIENTS_ENDPOINT}/${medicalId}`);
         const patient: FetchedPatient | undefined = response.data?.data ?? response.data;
 
         if (!isMounted || !patient) {
@@ -199,7 +199,7 @@ function EditProfilePage() {
     return () => {
       isMounted = false;
     };
-  }, [id]);
+  }, [medicalId]);
 
   const handleChange = (
     event: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
@@ -250,7 +250,7 @@ function EditProfilePage() {
     setIsSubmitting(true);
 
     try {
-      await axios.put(`${PATIENTS_ENDPOINT}/${id}`, payload);
+      await axios.put(`${PATIENTS_ENDPOINT}/${medicalId}`, payload);
       setSuccessMessage("Patient profile updated successfully. Redirecting to dashboard...");
       setTimeout(() => navigate("/dashboard"), 1200);
     } catch (error) {

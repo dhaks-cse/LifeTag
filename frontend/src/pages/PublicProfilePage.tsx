@@ -102,7 +102,7 @@ function TagList({ items, emptyLabel, tone }: TagListProps) {
 }
 
 function PublicProfilePage() {
-  const { id } = useParams();
+  const { medicalId } = useParams();
   const [patient, setPatient] = useState<Patient | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
@@ -115,7 +115,7 @@ function PublicProfilePage() {
       setNotFound(false);
 
       try {
-        const response = await axios.get(`${PATIENTS_ENDPOINT}/${id}`);
+        const response = await axios.get(`${PATIENTS_ENDPOINT}/${medicalId}`);
         const data: Patient | undefined = response.data?.data ?? response.data;
 
         if (!isMounted) return;
@@ -141,7 +141,7 @@ function PublicProfilePage() {
     return () => {
       isMounted = false;
     };
-  }, [id]);
+  }, [medicalId]);
 
   if (isLoading) {
     return (

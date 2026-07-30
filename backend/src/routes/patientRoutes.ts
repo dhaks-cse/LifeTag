@@ -1,21 +1,20 @@
-import express, { Request, Response } from "express";
+import express from "express";
+import {
+  createPatient,
+  getAllPatients,
+  getPatientByMedicalId,
+  updatePatient,
+  deletePatient,
+  searchPatients,
+} from "../controllers/patientController";
+
 const router = express.Router();
 
-let controller: unknown;
-
-try {
-  controller = require("../controllers/patientController");
-  console.log("Controller loaded successfully");
-  console.log(controller);
-} catch (error) {
-  console.error("Controller import failed:");
-  console.error(error);
-}
-
-router.get("/", (req: Request, res: Response) => {
-  res.json({
-    message: "Routes are working."
-  });
-});
+router.get("/search", searchPatients);
+router.get("/", getAllPatients);
+router.post("/", createPatient);
+router.get("/:medicalId", getPatientByMedicalId);
+router.put("/:medicalId", updatePatient);
+router.delete("/:medicalId", deletePatient);
 
 export default router;
