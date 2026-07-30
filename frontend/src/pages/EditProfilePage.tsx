@@ -17,12 +17,48 @@ import {
   AlertTriangle,
 } from "lucide-react";
 
+interface EditProfileFormData {
+  fullName: string;
+  bloodGroup: string;
+  dateOfBirth: string;
+  gender: string;
+  allergies: string;
+  chronicConditions: string;
+  currentMedications: string;
+  emergencyContactName: string;
+  emergencyContactRelation: string;
+  emergencyContactPhone: string;
+  organDonor: boolean;
+  notes: string;
+}
+
+type FormErrors = Partial<Record<keyof EditProfileFormData, string>>;
+
+interface FetchedEmergencyContact {
+  name?: string;
+  relation?: string;
+  phone?: string;
+}
+
+interface FetchedPatient {
+  fullName?: string;
+  bloodGroup?: string;
+  dateOfBirth?: string;
+  gender?: string;
+  allergies?: string[];
+  chronicConditions?: string[];
+  currentMedications?: string[];
+  emergencyContacts?: FetchedEmergencyContact[];
+  organDonor?: boolean;
+  notes?: string;
+}
+
 const PATIENTS_ENDPOINT = "http://localhost:5001/api/patients";
 
 const BLOOD_GROUPS = ["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"];
 const GENDERS = ["Male", "Female", "Other"];
 
-const initialFormState = {
+const initialFormState: EditProfileFormData = {
   fullName: "",
   bloodGroup: "",
   dateOfBirth: "",
@@ -37,26 +73,26 @@ const initialFormState = {
   notes: "",
 };
 
-function splitToList(value) {
+function splitToList(value: string): string[] {
   return value
     .split(",")
     .map((item) => item.trim())
     .filter(Boolean);
 }
 
-function joinList(value) {
+function joinList(value?: string[]): string {
   return Array.isArray(value) ? value.join(", ") : "";
 }
 
-function toDateInputValue(value) {
+function toDateInputValue(value?: string): string {
   if (!value) return "";
   const date = new Date(value);
   if (Number.isNaN(date.getTime())) return "";
   return date.toISOString().split("T")[0];
 }
 
-function validateForm(formData) {
-  const errors = {};
+function validateForm(formData: EditProfileFormData): FormErrors {
+  const errors: FormErrors = {};
 
   if (!formData.fullName.trim()) {
     errors.fullName = "Full name is required.";
@@ -95,7 +131,11 @@ function validateForm(formData) {
   return errors;
 }
 
-function FieldError({ message }) {
+interface FieldErrorProps {
+  message?: string;
+}
+
+function FieldError({ message }: FieldErrorProps) {
   if (!message) return null;
   return <p className="mt-1.5 text-xs font-medium text-rose-600">{message}</p>;
 }
@@ -104,8 +144,8 @@ function EditProfilePage() {
   const { id } = useParams();
   const navigate = useNavigate();
 
-  const [formData, setFormData] = useState(initialFormState);
-  const [fieldErrors, setFieldErrors] = useState({});
+  const [formData, setFormData] = useState<EditProfileFormData>(initialFormState);
+  const [fieldErrors, setFieldErrors] = useState<FormErrors>({});
   const [isLoading, setIsLoading] = useState(true);
   const [loadError, setLoadError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -121,7 +161,7 @@ function EditProfilePage() {
 
       try {
         const response = await axios.get(`${PATIENTS_ENDPOINT}/${id}`);
-        const patient = response.data?.data ?? response.data;
+        const patient: FetchedPatient | undefined = response.data?.data ?? response.data;
 
         if (!isMounted || !patient) {
           return;
@@ -161,15 +201,18 @@ function EditProfilePage() {
     };
   }, [id]);
 
-  const handleChange = (event) => {
-    const { name, value, type, checked } = event.target;
+  const handleChange = (
+    event: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
+  ) => {
+    const { name, value, type } = event.target;
+    const checked = (event.target as HTMLInputElement).checked;
     setFormData((previous) => ({
       ...previous,
       [name]: type === "checkbox" ? checked : value,
     }));
   };
 
-  const handleSubmit = async (event) => {
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setSuccessMessage("");
     setSubmitError("");
@@ -211,9 +254,11 @@ function EditProfilePage() {
       setSuccessMessage("Patient profile updated successfully. Redirecting to dashboard...");
       setTimeout(() => navigate("/dashboard"), 1200);
     } catch (error) {
-      setSubmitError(
-        error.response?.data?.message ?? "We couldn't update this profile. Please try again."
-      );
+      const message =
+        axios.isAxiosError<{ message?: string }>(error) && error.response?.data?.message
+          ? error.response.data.message
+          : "We couldn't update this profile. Please try again.";
+      setSubmitError(message);
     } finally {
       setIsSubmitting(false);
     }

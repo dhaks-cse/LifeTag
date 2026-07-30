@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import axios from "axios";
 import { motion } from "framer-motion";
+import type { LucideIcon } from "lucide-react";
 import {
   Search,
   Plus,
@@ -19,6 +20,21 @@ import {
   FileCheck2,
 } from "lucide-react";
 
+interface EmergencyContact {
+  name?: string;
+  relation?: string;
+  phone?: string;
+}
+
+interface Patient {
+  _id?: string;
+  id?: string;
+  fullName?: string;
+  medicalId?: string;
+  bloodGroup?: string;
+  emergencyContacts?: EmergencyContact[];
+}
+
 const PATIENTS_ENDPOINT = "http://localhost:5001/api/patients";
 
 const staggerContainerVariant = {
@@ -31,25 +47,32 @@ const fadeUpVariant = {
   visible: { opacity: 1, y: 0 },
 };
 
-function extractPatientList(payload) {
+function extractPatientList(payload: unknown): Patient[] {
   if (Array.isArray(payload)) return payload;
-  if (Array.isArray(payload?.data)) return payload.data;
-  if (Array.isArray(payload?.patients)) return payload.patients;
+  const record = payload as { data?: unknown; patients?: unknown } | null | undefined;
+  if (Array.isArray(record?.data)) return record.data;
+  if (Array.isArray(record?.patients)) return record.patients;
   return [];
 }
 
-function getEmergencyContactCount(patient) {
+function getEmergencyContactCount(patient: Patient): number {
   return Array.isArray(patient.emergencyContacts) ? patient.emergencyContacts.length : 0;
 }
 
-function getInitials(fullName) {
+function getInitials(fullName?: string): string {
   if (!fullName) return "NA";
   const parts = fullName.trim().split(/\s+/);
   const initials = parts.slice(0, 2).map((part) => part[0]?.toUpperCase() ?? "");
   return initials.join("") || "NA";
 }
 
-function StatCard({ icon: Icon, label, value }) {
+interface StatCardProps {
+  icon: LucideIcon;
+  label: string;
+  value: number;
+}
+
+function StatCard({ icon: Icon, label, value }: StatCardProps) {
   return (
     <motion.div
       variants={fadeUpVariant}
@@ -68,7 +91,14 @@ function StatCard({ icon: Icon, label, value }) {
   );
 }
 
-function QuickActionButton({ icon: Icon, label, onClick, to }) {
+interface QuickActionButtonProps {
+  icon: LucideIcon;
+  label: string;
+  onClick?: () => void;
+  to?: string;
+}
+
+function QuickActionButton({ icon: Icon, label, onClick, to }: QuickActionButtonProps) {
   const className =
     "flex items-center gap-2 rounded-full border border-slate-300 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 transition-colors hover:border-blue-600 hover:text-blue-600";
 
@@ -89,7 +119,11 @@ function QuickActionButton({ icon: Icon, label, onClick, to }) {
   );
 }
 
-function PatientCard({ patient }) {
+interface PatientCardProps {
+  patient: Patient;
+}
+
+function PatientCard({ patient }: PatientCardProps) {
   const patientId = patient._id ?? patient.id;
 
   return (
@@ -163,7 +197,7 @@ function SkeletonCard() {
 }
 
 function DashboardPage() {
-  const [patients, setPatients] = useState([]);
+  const [patients, setPatients] = useState<Patient[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState("");
   const [searchTerm, setSearchTerm] = useState("");

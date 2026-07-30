@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
+import type { LucideIcon } from "lucide-react";
 import {
   Zap,
   QrCode,
@@ -148,7 +149,13 @@ const hardwareItems = [
   },
 ];
 
-function NavAnchor({ href, label, onClick }) {
+interface NavAnchorProps {
+  href: string;
+  label: string;
+  onClick?: () => void;
+}
+
+function NavAnchor({ href, label, onClick }: NavAnchorProps) {
   return (
     <a
       href={href}
@@ -160,7 +167,12 @@ function NavAnchor({ href, label, onClick }) {
   );
 }
 
-function TrustBadge({ icon: Icon, label }) {
+interface TrustBadgeProps {
+  icon: LucideIcon;
+  label: string;
+}
+
+function TrustBadge({ icon: Icon, label }: TrustBadgeProps) {
   return (
     <div className="flex items-center gap-2 text-sm font-medium text-slate-600">
       <Icon className="h-4 w-4 text-blue-600" />
@@ -169,7 +181,13 @@ function TrustBadge({ icon: Icon, label }) {
   );
 }
 
-function FeatureCard({ icon: Icon, title, description }) {
+interface FeatureCardProps {
+  icon: LucideIcon;
+  title: string;
+  description: string;
+}
+
+function FeatureCard({ icon: Icon, title, description }: FeatureCardProps) {
   return (
     <motion.div
       variants={fadeUpVariant}
@@ -184,7 +202,14 @@ function FeatureCard({ icon: Icon, title, description }) {
   );
 }
 
-function StepCard({ icon: Icon, title, description, stepNumber }) {
+interface StepCardProps {
+  icon: LucideIcon;
+  title: string;
+  description: string;
+  stepNumber: number;
+}
+
+function StepCard({ icon: Icon, title, description, stepNumber }: StepCardProps) {
   return (
     <motion.div variants={fadeUpVariant} className="relative rounded-2xl border border-slate-200 bg-white p-6">
       <div className="flex items-center gap-3">
@@ -199,7 +224,13 @@ function StepCard({ icon: Icon, title, description, stepNumber }) {
   );
 }
 
-function HardwareCard({ icon: Icon, title, description }) {
+interface HardwareCardProps {
+  icon: LucideIcon;
+  title: string;
+  description: string;
+}
+
+function HardwareCard({ icon: Icon, title, description }: HardwareCardProps) {
   return (
     <motion.div
       variants={fadeUpVariant}
