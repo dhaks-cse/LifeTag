@@ -85,23 +85,23 @@ LifeTag removes every barrier between a responder and the information they need:
 
 | Category | Feature |
 |---|---|
-| 🩺 Patient Management | Create, view, edit, and manage patient medical profiles from a secure dashboard |
-| 🏷️ Unique Medical ID | Auto-generated, unique identifier (`LT-YYYY-XXXX`) per patient |
-| 📶 NFC / QR Access | Public emergency profile opens instantly via NFC tap or QR scan |
-| 🚑 Emergency Profile | Blood group, allergies, chronic conditions, medications, emergency contacts, organ donor status |
-| 🔔 Emergency Sessions | Every profile view auto-creates a time-boxed (1-hour) emergency session |
-| 🛡️ Admin Monitoring | Live dashboard of active & past emergency sessions, polling every 10s |
-| 🔌 Hardware Prototype | ESP32 + RC522 reader demonstrates real NFC tag scanning and backend sync |
-| 🎨 Modern UI | Responsive, accessible, motion-enhanced interface built with Tailwind + Framer Motion |
+|  Patient Management | Create, view, edit, and manage patient medical profiles from a secure dashboard |
+|  Unique Medical ID | Auto-generated, unique identifier (`LT-YYYY-XXXX`) per patient |
+|  NFC / QR Access | Public emergency profile opens instantly via NFC tap or QR scan |
+|  Emergency Profile | Blood group, allergies, chronic conditions, medications, emergency contacts, organ donor status |
+|  Emergency Sessions | Every profile view auto-creates a time-boxed (1-hour) emergency session |
+|  Admin Monitoring | Live dashboard of active & past emergency sessions, polling every 10s |
+|  Hardware Prototype | ESP32 + RC522 reader demonstrates real NFC tag scanning and backend sync |
+|  Modern UI | Responsive, accessible, motion-enhanced interface built with Tailwind + Framer Motion |
 
 ## Key Highlights
 
-- ⚡ **Sub-second access** — no app install, no authentication wall for responders.
-- 🆔 **Deterministic Medical IDs** generated server-side on patient creation.
-- ⏱️ **Self-expiring emergency sessions** — auto-close after exactly 1 hour via a background sweep.
-- 📊 **Real-time-feeling admin dashboard** via lightweight polling (no infra overhead of WebSockets).
-- 🔐 **Privacy-first** — the public profile route never exposes session, admin, or statistics data.
-- 🔧 **Full hardware-to-cloud loop** — physical NFC tap → cloud API → live dashboard update.
+- **Sub-second access** — no app install, no authentication wall for responders.
+- **Deterministic Medical IDs** generated server-side on patient creation.
+- **Self-expiring emergency sessions** — auto-close after exactly 1 hour via a background sweep.
+- **Real-time-feeling admin dashboard** via lightweight polling (no infra overhead of WebSockets).
+- **Privacy-first** — the public profile route never exposes session, admin, or statistics data.
+- **Full hardware-to-cloud loop** — physical NFC tap → cloud API → live dashboard update.
 
 ## Software Architecture
 
@@ -387,12 +387,12 @@ Admin-protected routes require an `x-admin-key` header matching the server's `AD
 
 ## Future Scope
 
-- 🔑 Full admin authentication (per-user accounts, JWT/session-based) beyond the shared-key gate.
-- 📲 Native mobile companion app with offline-cached emergency profiles.
-- 🏥 Hospital/EMS system integrations (HL7/FHIR compatibility).
-- 🌐 Multi-language emergency profile rendering.
-- 📍 Location-tagging on emergency session creation for responder dispatch context.
-- 🔔 SMS/push notification to emergency contacts the moment a session starts.
+- Full admin authentication (per-user accounts, JWT/session-based) beyond the shared-key gate.
+- Native mobile companion app with offline-cached emergency profiles.
+- Hospital/EMS system integrations (HL7/FHIR compatibility).
+- Multi-language emergency profile rendering.
+- Location-tagging on emergency session creation for responder dispatch context.
+- SMS/push notification to emergency contacts the moment a session starts.
 
 ## Security & Privacy
 
@@ -401,7 +401,7 @@ Admin-protected routes require an `x-admin-key` header matching the server's `AD
 - Sessions **auto-expire after 1 hour**, both lazily on read and via a background sweep, and are never deleted — only closed — preserving an audit trail.
 - No patient data is ever cached client-side beyond the active browser session.
 
-> ⚠️ This is a hackathon prototype. Before any real-world clinical use, it must undergo a full security review, HIPAA/GDPR-equivalent compliance assessment, and a move to per-admin authentication.
+> This is a hackathon prototype. Before any real-world clinical use, it must undergo a full security review, HIPAA/GDPR-equivalent compliance assessment, and a move to per-admin authentication.
 
 ## Project Structure (Detailed)
 
