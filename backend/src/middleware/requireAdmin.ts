@@ -1,8 +1,8 @@
 import { Request, Response, NextFunction } from "express";
 
 const requireAdmin = (req: Request, res: Response, next: NextFunction) => {
-  const providedKey = req.header("x-admin-key");
-  const expectedKey = process.env.ADMIN_SECRET;
+  const providedKey = req.header("x-admin-key")?.trim();
+  const expectedKey = process.env.ADMIN_SECRET?.trim();
 
   if (!expectedKey || !providedKey || providedKey !== expectedKey) {
     return res.status(401).json({
