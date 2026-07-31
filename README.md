@@ -20,7 +20,7 @@ Smart NFC-Based Emergency Medical Identity System
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](#license)
 
 [Live Demo](https://lifetag-pi.vercel.app/) &nbsp;•&nbsp;
-[Demo Video](https://drive.google.com/file/d/1dXBpKzw_DVOMwJkkrrBGNchFSuIOtMBF/view?usp=sharing) &nbsp;•&nbsp;
+[Demo Video](https://drive.google.com/file/d/1PnC9blpdH6YbZ5bI4NWUHQUirQjdpbLZ/view?usp=drive_link) &nbsp;•&nbsp;
 [Presentation](https://drive.google.com/file/d/1GyOHvAd7lpZAbMiEDKnjWMzsFPOtR1hi/view?usp=sharing)
 
 </div>
@@ -382,7 +382,7 @@ Admin-protected routes require an `x-admin-key` header matching the server's `AD
 | Frontend | Vercel | [lifetag-pi.vercel.app](https://lifetag-pi.vercel.app/) |
 | Backend | Render | Configured via `VITE_API_URL` |
 
-- **Demo Video:** [Watch here](https://drive.google.com/file/d/1dXBpKzw_DVOMwJkkrrBGNchFSuIOtMBF/view?usp=sharing)
+- **Demo Video:** [Watch here](https://drive.google.com/file/d/1PnC9blpdH6YbZ5bI4NWUHQUirQjdpbLZ/view?usp=drive_link)
 - **Presentation (PPT):** [View here](https://drive.google.com/file/d/1GyOHvAd7lpZAbMiEDKnjWMzsFPOtR1hi/view?usp=sharing)
 
 ## Future Scope
