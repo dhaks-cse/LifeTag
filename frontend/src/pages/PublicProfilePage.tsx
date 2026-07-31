@@ -20,6 +20,7 @@ import {
   UserX,
   AlertTriangle,
 } from "lucide-react";
+import { startEmergencySession } from "../api/emergencyApi";
 
 interface EmergencyContact {
   name?: string;
@@ -136,6 +137,11 @@ function PublicProfilePage() {
           setNotFound(true);
         } else {
           setPatient(data);
+          if (medicalId) {
+            startEmergencySession(medicalId).catch(() => {
+              // Silently ignore: emergency session tracking must never block the public profile.
+            });
+          }
         }
       } catch (error) {
         if (isMounted) {

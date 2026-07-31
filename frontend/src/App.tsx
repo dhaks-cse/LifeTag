@@ -5,6 +5,7 @@ import DashboardPage from "./pages/DashboardPage";
 import CreateProfilePage from "./pages/CreateProfilePage";
 import EditProfilePage from "./pages/EditProfilePage";
 import PublicProfilePage from "./pages/PublicProfilePage";
+import AdminEmergencyPage from "./pages/AdminEmergencyPage";
 import PageTransition from "./components/PageTransition";
 import { ToastProvider } from "./components/ui/Toast";
 
@@ -45,6 +46,14 @@ function App() {
             element={
               <PageTransition>
                 <PublicProfilePage />
+              </PageTransition>
+            }
+          />
+          <Route
+            path="/admin/emergency"
+            element={
+              <PageTransition>
+                <AdminEmergencyPage />
               </PageTransition>
             }
           />

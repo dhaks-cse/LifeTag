@@ -3,6 +3,7 @@ import cors from "cors";
 import morgan from "morgan";
 
 import patientRoutes from "./routes/patientRoutes";
+import emergencyRoutes from "./routes/emergencyRoutes";
 import errorHandler from "./middleware/errorHandler";
 
 const app = express();
@@ -30,6 +31,7 @@ app.get("/api/health", (req: Request, res: Response) => {
 });
 
 app.use("/api/patients", patientRoutes);
+app.use("/api/emergency", emergencyRoutes);
 
 app.use((req: Request, res: Response) => {
   res.status(404).json({
