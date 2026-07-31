@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="https://via.placeholder.com/120x120.png?text=LifeTag" alt="LifeTag Logo" width="120" height="120" />
+<img src="./frontend/public/logo.svg" alt="LifeTag Logo" width="120" height="120" />
 
 # LifeTag
 
