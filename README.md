@@ -170,19 +170,6 @@ LifeTag/
 
 ## Screenshots
 
-<div align="center">
-
-| Landing Page | Patient Dashboard | Emergency Profile |
-|:---:|:---:|:---:|
-| _add screenshot_ | _add screenshot_ | _add screenshot_ |
-
-| Create Profile (Wizard) | Admin Emergency Dashboard |
-|:---:|:---:|
-| _add screenshot_ | _add screenshot_ |
-
-</div>
-
-> Replace the placeholders above with real screenshots in a `docs/screenshots/` folder before submission.
 
 ## Hardware Components
 
