@@ -27,37 +27,6 @@ Smart NFC-Based Emergency Medical Identity System
 
 ---
 
-## Table of Contents
-
-- [Overview](#overview)
-- [Problem Statement](#problem-statement)
-- [Solution](#solution)
-- [Features](#features)
-- [Key Highlights](#key-highlights)
-- [Software Architecture](#software-architecture)
-- [Hardware Architecture](#hardware-architecture)
-- [System Workflow](#system-workflow)
-- [Folder Structure](#folder-structure)
-- [Technology Stack](#technology-stack)
-- [Screenshots](#screenshots)
-- [Hardware Components](#hardware-components)
-- [Installation Guide](#installation-guide)
-- [Backend Setup](#backend-setup)
-- [Frontend Setup](#frontend-setup)
-- [Environment Variables](#environment-variables)
-- [Running the Project](#running-the-project)
-- [API Overview](#api-overview)
-- [Database Schema Overview](#database-schema-overview)
-- [Deployment](#deployment)
-- [Future Scope](#future-scope)
-- [Security & Privacy](#security--privacy)
-- [Project Structure (Detailed)](#project-structure-detailed)
-- [Contributors](#contributors)
-- [License](#license)
-- [Acknowledgements](#acknowledgements)
-
----
-
 ## Overview
 
 **LifeTag** is a Smart NFC-Based Emergency Medical Identity System that gives first responders instant access to a patient's critical medical information — with no app, no login, and no delay.
